@@ -67,11 +67,6 @@ Grid::Grid(std::vector<std::vector<char>> values){
             boxes[box(row, col)].emplace_back(cell);
         }
     }
-
-    //initialize rows_, cols_, boxes_
-    for (auto row: rows) rows_.push_back(Group(row));
-    for (auto column: columns) columns_.push_back(Group(column));
-    for (auto box: boxes) boxes_.push_back(Group(box));
 }
     
 Cell Grid::at(size_t row, size_t col) const{
@@ -80,17 +75,44 @@ Cell Grid::at(size_t row, size_t col) const{
 
 void Grid::set(size_t row, size_t col, char val){
     cells_[side_length()*row + col].set(val);
-    rows_[row][col].set(val);
-    columns_[col][row].set(val);
-    boxes_[box(row,col)][row%boxheight_*boxwidth_ + col%boxwidth_].set(val);
 }
 
 std::vector<Group> Grid::all_groups() const{
     std::vector<Group> groups;
-    groups.insert(groups.end(), rows_.begin(), rows_.end());
-    groups.insert(groups.end(), columns_.begin(), columns_.end());
-    groups.insert(groups.end(), boxes_.begin(), boxes_.end());
+    std::vector<Group> all_rows=rows(), all_columns=columns(), 
+        all_boxes=boxes();
+    groups.insert(groups.end(), all_rows.begin(), all_rows.end());
+    groups.insert(groups.end(), all_columns.begin(), all_columns.end());
+    groups.insert(groups.end(), all_boxes.begin(), all_boxes.end());
     return groups;
+}
+    
+std::vector<Group> Grid::rows() const{
+    std::vector<std::vector<Cell>> rows(side_length());
+    for(Cell c : cells_){
+        rows[c.row()].push_back(c);
+    }
+    std::vector<Group> results;
+    for(auto row : rows) results.push_back(Group(row));
+    return results;
+}
+std::vector<Group> Grid::columns() const{
+    std::vector<std::vector<Cell>> cols(side_length());
+    for(Cell c : cells_){
+        cols[c.col()].push_back(c);
+    }
+    std::vector<Group> results;
+    for(auto col : cols) results.push_back(Group(col));
+    return results;
+}
+std::vector<Group> Grid::boxes() const{
+    std::vector<std::vector<Cell>> boxes(side_length());
+    for(Cell c : cells_){
+        boxes[box(c.row(), c.col())].push_back(c);
+    }
+    std::vector<Group> results;
+    for(auto box : boxes) results.push_back(Group(box));
+    return results;
 }
     
 std::vector<std::vector<char>> Grid::unpack_rows_(

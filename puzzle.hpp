@@ -45,11 +45,11 @@ public:
     //group accessors
     std::vector<Group> all_groups() const;
     std::vector<Group> groups(size_t row, size_t col) const{
-        return {rows_[row], columns_[col], boxes_[box(row,col)]};}
+        return {rows()[row], columns()[col], boxes()[box(row,col)]};}
     std::vector<Cell> cells() const {return cells_;}
-    std::vector<Group> rows() const {return rows_;}
-    std::vector<Group> columns() const {return columns_;}
-    std::vector<Group> boxes() const {return boxes_;}
+    std::vector<Group> rows() const;
+    std::vector<Group> columns() const;
+    std::vector<Group> boxes() const;
     
     //utility
     size_t side_length() const {return allowed_vals_.size();}
@@ -61,9 +61,6 @@ private:
     std::vector<std::vector<char>> unpack_rows_(std::vector<std::string> rows)
         const;
     std::vector<std::vector<char>> unpack_rows_(std::vector<Group> rows) const;
-    std::vector<Group> rows_;
-    std::vector<Group> columns_;
-    std::vector<Group> boxes_;
     std::vector<Cell> cells_;
     std::set<char> allowed_vals_;
     size_t boxheight_;
